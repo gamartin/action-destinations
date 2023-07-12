@@ -249,6 +249,39 @@ describe('Salesforce Utils', () => {
       const expected = `Name,NumberOfEmployees,sellsKrabbyPatties__c,Id\n"Krusty Krab","2","true","00"\n"Chum Bucket","1","false","01"\n`
       expect(csv).toEqual(expected)
     })
+
+    it('should exclude all setting keys', async () => {
+      const updatePayloads: GenericPayload[] = [
+        {
+          operation: 'update',
+          enable_batching: true,
+          bulkUpdateRecordId: '00',
+          name: 'Krusty Krab',
+          number_of_employees: 2,
+          customFields: {
+            sellsKrabbyPatties__c: true
+          },
+          recordMatcherOperator: 'OR',
+          customObjectName: 'A Custom name'
+        },
+        {
+          operation: 'update',
+          enable_batching: true,
+          bulkUpdateRecordId: '01',
+          name: 'Chum Bucket',
+          number_of_employees: 1,
+          customFields: {
+            sellsKrabbyPatties__c: false
+          },
+          recordMatcherOperator: 'OR',
+          customObjectName: 'A Custom name'
+        }
+      ]
+
+      const csv = buildCSVData(updatePayloads, 'Id')
+      const expected = `Name,NumberOfEmployees,sellsKrabbyPatties__c,Id\n"Krusty Krab","2","true","00"\n"Chum Bucket","1","false","01"\n`
+      expect(csv).toEqual(expected)
+    })
   })
 
   describe('Instance URL', () => {
